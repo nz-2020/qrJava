@@ -1,0 +1,35 @@
+
+  void generateQR(String codeData) {
+        Path qrLoc = null;
+        String qrlocation = null;
+        try {
+            File filepath = new File(qrlocation);
+            if (!filepath.exists()) {
+             filepath.mkdir();
+               // if (logger.isDebugEnabled()) {
+                 //   logger.info("filepath is Created" + qrlocation);
+                //}
+            }
+            QRCodeWriter qrCodeWriter;
+            qrCodeWriter = new QRCodeWriter();
+            BitMatrix bitMatrix = qrCodeWriter.encode(codeData, BarcodeFormat.QR_CODE, 400, 400);
+
+            
+			qrLoc = FileSystems.getDefault().getPath(qrlocation + "/" + codeData + ".png");
+            MatrixToImageWriter.writeToPath(bitMatrix, "PNG", filepath);
+            
+        } catch (WriterException | IOException e) {
+            logger.error("Error generateQR " + e.getMessage());
+        }
+       
+    }
+	------------------------ get value from qrlocation------------
+	 @Value("${application.qrlocation}")
+      private String qrlocation;
+	  
+	  -------------------------Query
+	@Modifying
+    @Transactional
+    @Query(value = "update QRGEN qr set qr.qrlocation =?1 where qrId.asId=?2 ")
+    int updateQrloc(String qrlocation, int qrId);
+	-----------------------------------------------------------------------
